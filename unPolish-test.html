@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnPolish - Natify Your English</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff3366, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ff3366;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin: 30px 0 15px;
+            color: #ff6600;
+        }
+        
+        p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        ul li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: #ff3366;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff3366, #ff6600);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+        
+        .warning {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .question {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .question h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .options {
+            margin-top: 15px;
+        }
+        
+        .option {
+            display: block;
+            padding: 12px 20px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 51, 102, 0.5);
+        }
+        
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .option.selected {
+            background: rgba(255, 51, 102, 0.2);
+            border-color: #ff3366;
+        }
+        
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #ff3366, #ff6600);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .results {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            position: relative;
+            background: conic-gradient(#ff3366 0deg, #ff3366 var(--score), rgba(255, 255, 255, 0.1) var(--score));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 170px;
+            height: 170px;
+            background: #0a0a0a;
+            border-radius: 50%;
+        }
+        
+        .score-number {
+            position: relative;
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff3366, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .area-scores {
+            margin: 40px 0;
+            text-align: left;
+        }
+        
+        .area-score {
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .area-score-bar {
+            width: 200px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .area-score-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff3366, #ff6633);
+            transition: width 1s ease;
+        }
+        
+        .attention {
+            background: rgba(255, 102, 0, 0.2);
+            border: 1px solid #ff6600;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        
+        .conditional {
+            display: none;
+        }
+        
+        .detailed-results {
+            margin-top: 40px;
+            text-align: left;
+        }
+        
+        .myth-item {
+            background: rgba(255, 51, 102, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #ff3366;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Screen 1: Hook -->
+        <div class="screen active" id="screen1">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h1 style="font-size: 4em; margin-bottom: 15px;">UnPolish</h1>
+                <p style="font-size: 1.5em; opacity: 0.8; font-weight: 600;">Natify your English</p>
+            </div>
+            <h1>You speak English.</h1>
+            <p><strong>People understand you.</strong></p>
+            <p><strong>But there's still that gap.</strong></p>
+            <br>
+            <p>You don't sound like them. You don't think like them.</p>
+            <p>You know it. They know it.</p>
+            <button class="btn" onclick="nextScreen()">Diagnose and Close The Gap</button>
+        </div>
+        
+        <!-- Screen 2: Promise -->
+        <div class="screen" id="screen2">
+            <h1>It's not vocabulary.</h1>
+            <p><strong>It's not more practice.</strong></p>
+            <p><strong>It's the invisible wall between textbook English and native thinking.</strong></p>
+            <br>
+            <p>You learned rules. They understand meaning.</p>
+            <p>That's why you still:</p>
+            <ul>
+                <li>Second-guess yourself</li>
+                <li>Sound formal when they're casual</li>
+                <li>Miss the natural flow</li>
+                <li>Feel like an outsider</li>
+            </ul>
+            <button class="btn" onclick="nextScreen()">Test my English</button>
+        </div>
+        
+        <!-- Screen 3: Introduction -->
+        <div class="screen" id="screen3">
+            <h1>This test is different.</h1>
+            <p>We're not testing your English. We're testing what you believe about English and how your brain processes it.</p>
+            <br>
+            <p><strong>This diagnostic will reveal:</strong></p>
+            <ul>
+                <li>Which textbook myths are blocking you</li>
+                <li>Where Polish is interfering with your English</li>
+                <li>Whether you see meaning or just follow rules</li>
+                <li>If you have the foundations to naturally process English</li>
+            </ul>
+            <p>Some questions might seem strange. That's intentional. We're testing your mental model, not your memorization.</p>
+            <div class="warning">
+                <p><strong>Warning: This might hurt your grammar ego.</strong></p>
+            </div>
+            <p>Ready to see how your brain really processes English?</p>
+            <button class="btn" onclick="startTest()">Begin Test</button>
+        </div>
+        
+        <!-- Test Screens -->
+        <div class="screen" id="testScreen">
+            <div class="attention">
+                <p>ATTENTION: In multiple choice questions mark EVERY answer you think is true - most questions have more than one correct answer!</p>
+            </div>
+            
+            <div id="testContent">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <button class="btn" onclick="nextQuestion()">Next</button>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="screen" id="resultsScreen">
+            <div class="results">
+                <h1>Your Results</h1>
+                <div class="score-circle" style="--score: 0deg">
+                    <div class="score-number" id="finalScore">0%</div>
+                </div>
+                <h2 id="scoreMessage">Calculating...</h2>
+                
+                <div class="area-scores">
+                    <h3>Your Area Scores:</h3>
+                    <div class="area-score">
+                        <span>General Understanding</span>
+                        <div class="area-score-bar">
+                            <div class="area-score-fill" id="area1Score" style="width: 0%"></div>
+                        </div>
+                        <span id="area1Percent">0%</span>
+                    </div>
+                    <div class="area-score">
+                        <span>Simple vs Continuous</span>
+                        <div class="area-score-bar">
+                            <div class="area-score-fill" id="area2Score" style="width: 0%"></div>
+                        </div>
+                        <span id="area2Percent">0%</span>
+                    </div>
+                    <div class="area-score">
+                        <span>Perfect Tenses</span>
+                        <div class="area-score-bar">
+                            <div class="area-score-fill" id="area3Score" style="width: 0%"></div>
+                        </div>
+                        <span id="area3Percent">0%</span>
+                    </div>
+                    <div class="area-score">
+                        <span>Articles</span>
+                        <div class="area-score-bar">
+                            <div class="area-score-fill" id="area4Score" style="width: 0%"></div>
+                        </div>
+                        <span id="area4Percent">0%</span>
+                    </div>
+                    <div class="area-score">
+                        <span>Verbs & Phrasals</span>
+                        <div class="area-score-bar">
+                            <div class="area-score-fill" id="area5Score" style="width: 0%"></div>
+                        </div>
+                        <span id="area5Percent">0%</span>
+                    </div>
+                </div>
+                
+                <div class="detailed-results" id="detailedResults">
+                    <h3>Here's what's blocking you:</h3>
+                    <!-- Myths will be inserted here -->
+                </div>
+                
+                <button class="btn" onclick="emailResults()">Email Results to Teacher</button>
+                <button class="btn" onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentScreen = 1;
+        let currentQuestion = 0;
+        let answers = {};
+        let finalResults = {};
+        
+        function emailResults() {
+            const student = prompt("Please enter your name:");
+            if (!student) return;
+            
+            const areaNames = {
+                1: 'General Understanding',
+                2: 'Simple vs Continuous', 
+                3: 'Perfect Tenses',
+                4: 'Articles',
+                5: 'Verbs & Phrasals'
+            };
+            
+            let emailBody = `UnPolish Diagnostic Test Results%0D%0A`;
+            emailBody += `================================%0D%0A%0D%0A`;
+            emailBody += `Student: ${student}%0D%0A`;
+            emailBody += `Date: ${new Date().toLocaleDateString()}%0D%0A`;
+            emailBody += `Time: ${new Date().toLocaleTimeString()}%0D%0A%0D%0A`;
+            
+            emailBody += `OVERALL SCORE: ${Math.round(finalResults.overall)}%%0D%0A`;
+            emailBody += `Distance from Native Thinking: ${Math.round(100 - finalResults.overall)}%%0D%0A%0D%0A`;
+            
+            emailBody += `AREA SCORES:%0D%0A`;
+            Object.keys(finalResults.areas).forEach(area => {
+                emailBody += `${areaNames[area]}: ${Math.round(finalResults.areas[area])}%%0D%0A`;
+            });
+            
+            emailBody += `%0D%0ADETAILED ANSWERS:%0D%0A`;
+            questions.forEach(q => {
+                const answer = answers[q.id];
+                if (answer !== undefined && answer !== null) {
+                    emailBody += `%0D%0AQuestion: ${q.question}%0D%0A`;
+                    emailBody += `Answer: ${Array.isArray(answer) ? answer.join(', ') : answer}%0D%0A`;
+                }
+            });
+            
+            const subject = `UnPolish Test Results - ${student} - ${Math.round(100 - finalResults.overall)}% away from native`;
+            
+            window.location.href = `mailto:wokon@360yes.eu?subject=${subject}&body=${emailBody}`;
+        }
+        
+        const questions = [
+            // AREA 1: General
+            {
+                area: 1,
+                id: 'q1',
+                type: 'radio',
+                question: 'Does the word ANY sometimes mean "Jakiś" and sometimes "Żaden"?',
+                options: ['YES', 'NO'],
+                weight: 35
+            },
+            {
+                area: 1,
+                id: 'q1a',
+                type: 'checkbox',
+                question: 'What is correct?',
+                options: [
+                    'Do you have something for me?',
+                    'Do you have nothing for me?',
+                    'Do you have anything for me?',
+                    'Don\'t you have nothing for me?'
+                ],
+                weight: 35
+            },
+            {
+                area: 1,
+                id: 'q2',
+                type: 'radio',
+                question: 'When you hear "Explain me" do you hear "wytłumacz mi"?',
+                options: ['YES', 'NO'],
+                weight: 30
+            },
+            // AREA 2: Simple vs Continuous
+            {
+                area: 2,
+                id: 'q4',
+                type: 'radio',
+                question: 'When you see the word DOING, does your mind think "robić" or "robię"?',
+                options: ['YES', 'NO'],
+                weight: 25,
+                conditional: 'q4a'
+            },
+            {
+                area: 2,
+                id: 'q4a',
+                type: 'checkbox',
+                question: 'What does DOING mean?',
+                options: [
+                    'robienie i robić',
+                    'robię i robiący',
+                    'robiący/a, robiąc, robienie',
+                    'robienie i robię/robisz/robi/etc.',
+                    'I don\'t know'
+                ],
+                weight: 20,
+                showIf: {question: 'q4', answer: 'NO'}
+            },
+            {
+                area: 2,
+                id: 'q5',
+                type: 'checkbox',
+                question: 'Why is McDonald\'s slogan "I\'m loving it" and not "I love it"?',
+                options: [
+                    'It\'s a mistake but sounds catchy',
+                    'It means that you really love it now',
+                    'It shows you\'re actively experiencing enjoyment at McDonald\'s',
+                    'The grammar mistake attracts attention',
+                    'I don\'t know'
+                ],
+                weight: 20
+            },
+            {
+                area: 2,
+                id: 'q6',
+                type: 'radio',
+                question: 'Does past simple (I did, I went, I took) make you think of completed actions?',
+                options: ['YES', 'NO'],
+                weight: 25
+            },
+            {
+                area: 2,
+                id: 'q7',
+                type: 'checkbox',
+                question: 'What does "I\'m going to" mean?',
+                options: [
+                    'zamierzam',
+                    'future tense',
+                    'zmierzam',
+                    'mam taki plan',
+                    'I don\'t know'
+                ],
+                weight: 10
+            },
+            // AREA 3: Perfect Tenses
+            {
+                area: 3,
+                id: 'q8',
+                type: 'checkbox',
+                question: 'Which statement is true?',
+                options: [
+                    'We use Present Perfect when the time is not specified or not important',
+                    'Perfect tenses are the "behind equivalent" of their counterparts',
+                    'Perfect tenses show completed actions',
+                    'Future Perfect is an absurd tense',
+                    'I don\'t know'
+                ],
+                weight: 40
+            },
+            {
+                area: 3,
+                id: 'q9',
+                type: 'checkbox',
+                question: 'You should say "I will have paid you back by next Friday" because:',
+                options: [
+                    'You shouldn\'t - sounds like you\'re returning from the future',
+                    'It\'s good grammar - you used "by next Friday" time clause',
+                    'You want to emphasize that you will pay back for sure',
+                    'You\'re British',
+                    'I don\'t know'
+                ],
+                weight: 20
+            },
+            {
+                area: 3,
+                id: 'q10',
+                type: 'checkbox',
+                question: '"She\'s gone" best shows this situation in Polish:',
+                options: [
+                    'Ona wyszła',
+                    'Nie ma jej',
+                    'Ona poszła',
+                    'Właśnie wyszła'
+                ],
+                weight: 40
+            },
+            // AREA 4: Articles
+            {
+                area: 4,
+                id: 'q11',
+                type: 'checkbox',
+                question: 'Which statement is true:',
+                options: [
+                    'Articles have a lot of rules and exceptions',
+                    'Articles are pragmatic and solve a problem',
+                    'There are no articles in Polish',
+                    'Articles make English more efficient than Polish',
+                    'I don\'t know'
+                ],
+                weight: 25
+            },
+            {
+                area: 4,
+                id: 'q12',
+                type: 'text',
+                question: 'Complete: "I would like to have ___ car. ___ car that would be fast. ___ car that would be expensive."',
+                blanks: ['First blank', 'Second blank', 'Third blank'],
+                options: ['a', 'the', '(zero)'],
+                weight: 25
+            },
+            {
+                area: 4,
+                id: 'q13',
+                type: 'radio',
+                question: 'Using \'the\' in The United States, The United Kingdom and The Netherlands is an exception.',
+                options: ['YES', 'NO'],
+                weight: 25
+            },
+            {
+                area: 4,
+                id: 'q14',
+                type: 'radio',
+                question: 'You use THE when there is only one of something like the sun or the president.',
+                options: ['YES', 'NO'],
+                weight: 25
+            },
+            // AREA 5: Verbs & Phrasals
+            {
+                area: 5,
+                id: 'q15',
+                type: 'checkbox',
+                question: 'Which statement is true:',
+                options: [
+                    'Phrasals are unique to English and there is nothing like it in Polish',
+                    'Phrasals are logical and show you the meaning',
+                    'You have to memorize all the different applications of a phrasal',
+                    'There is something quite similar in Polish',
+                    'I don\'t know'
+                ],
+                weight: 40
+            },
+            {
+                area: 5,
+                id: 'q16',
+                type: 'checkbox',
+                question: 'What can "break up" mean:',
+                options: [
+                    'End a relationship',
+                    'Get an allergic reaction',
+                    'Stop a fight',
+                    'Bad phone connection',
+                    'Go for lunch during work'
+                ],
+                weight: 20
+            },
+            {
+                area: 5,
+                id: 'q17',
+                type: 'checkbox',
+                question: 'These statements about the word UP are true:',
+                options: [
+                    'It has 1 meaning showing higher/more/stronger/👆/etc.',
+                    'It can mean anything depending on the context it is in',
+                    'It has about 8-10 meanings',
+                    'It is always opposite of down',
+                    'I don\'t know'
+                ],
+                weight: 40
+            }
+        ];
+        
+        function nextScreen() {
+            document.getElementById(`screen${currentScreen}`).classList.remove('active');
+            currentScreen++;
+            document.getElementById(`screen${currentScreen}`).classList.add('active');
+        }
+        
+        function startTest() {
+            document.getElementById('screen3').classList.remove('active');
+            document.getElementById('testScreen').classList.add('active');
+            showQuestion();
+            updateProgress();
+        }
+        
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            if (!question) {
+                calculateResults();
+                return;
+            }
+            
+            // Check if this question should be shown
+            if (question.showIf) {
+                const conditionAnswer = answers[question.showIf.question];
+                if (conditionAnswer !== question.showIf.answer) {
+                    currentQuestion++;
+                    showQuestion();
+                    return;
+                }
+            }
+            
+            let html = `<h3>Area ${question.area}: Question ${currentQuestion + 1}</h3>`;
+            html += `<div class="question">`;
+            html += `<h4>${question.question}</h4>`;
+            
+            if (question.type === 'text') {
+                html += '<div class="options">';
+                question.blanks.forEach((blank, i) => {
+                    html += `<p>${blank}:</p>`;
+                    question.options.forEach(opt => {
+                        html += `<label class="option">
+                            <input type="radio" name="${question.id}_${i}" value="${opt}">
+                            ${opt}
+                        </label>`;
+                    });
+                });
+                html += '</div>';
+            } else {
+                html += '<div class="options">';
+                question.options.forEach((opt, i) => {
+                    const inputType = question.type === 'checkbox' ? 'checkbox' : 'radio';
+                    html += `<label class="option">
+                        <input type="${inputType}" name="${question.id}" value="${opt}">
+                        ${opt}
+                    </label>`;
+                });
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            
+            document.getElementById('testContent').innerHTML = html;
+            
+            // Add event listeners
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'INPUT') return;
+                    const input = this.querySelector('input');
+                    if (input.type === 'checkbox') {
+                        input.checked = !input.checked;
+                    } else {
+                        input.checked = true;
+                    }
+                    updateSelection();
+                });
+            });
+            
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', updateSelection);
+            });
+        }
+        
+        function updateSelection() {
+            document.querySelectorAll('.option').forEach(option => {
+                const input = option.querySelector('input');
+                if (input.checked) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+        
+        function nextQuestion() {
+            const question = questions[currentQuestion];
+            
+            if (question.type === 'text') {
+                const answer = [];
+                question.blanks.forEach((_, i) => {
+                    const selected = document.querySelector(`input[name="${question.id}_${i}"]:checked`);
+                    answer.push(selected ? selected.value : null);
+                });
+                answers[question.id] = answer;
+            } else if (question.type === 'checkbox') {
+                const checked = Array.from(document.querySelectorAll(`input[name="${question.id}"]:checked`))
+                    .map(input => input.value);
+                answers[question.id] = checked;
+            } else {
+                const selected = document.querySelector(`input[name="${question.id}"]:checked`);
+                answers[question.id] = selected ? selected.value : null;
+            }
+            
+            currentQuestion++;
+            updateProgress();
+            showQuestion();
+        }
+        
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        function calculateResults() {
+            const scoring = {
+                // Area 1
+                'q1': (ans) => ans === 'NO' ? 35 : 0,
+                'q1a': (ans) => {
+                    const correct = ['Do you have something for me?', 'Do you have nothing for me?', 'Do you have anything for me?', 'Don\'t you have nothing for me?'];
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    // Count correct answers
+                    let correctCount = 0;
+                    correct.forEach(c => {
+                        if (ans.includes(c)) correctCount++;
+                    });
+                    
+                    // Calculate score: percentage of correct answers found
+                    const baseScore = (correctCount / correct.length) * 35;
+                    
+                    // Small deduction for extra wrong answers
+                    const wrongCount = ans.length - correctCount;
+                    const deduction = wrongCount * 2; // 2% per wrong answer
+                    
+                    return Math.max(0, baseScore - deduction);
+                },
+                'q2': (ans) => ans === 'NO' ? 30 : 0,
+                // Area 2
+                'q4': (ans) => ans === 'NO' ? 25 : 0,
+                'q4a': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'robiący/a, robiąc, robienie';
+                    let score = 0;
+                    
+                    // If they got the correct answer
+                    if (ans.includes(correct)) {
+                        score = 20;
+                        // Deduct for wrong answers
+                        const wrongCount = ans.length - 1;
+                        score -= wrongCount * 5; // 5% per wrong answer
+                    } else if (ans.includes('I don\'t know')) {
+                        score = 0; // No points for just "I don't know"
+                    }
+                    
+                    return Math.max(0, score);
+                },
+                'q5': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'It shows you\'re actively experiencing enjoyment at McDonald\'s';
+                    let score = 0;
+                    
+                    if (ans.includes(correct)) {
+                        score = 20;
+                        const wrongCount = ans.length - 1;
+                        score -= wrongCount * 5;
+                    } else if (ans.includes('I don\'t know')) {
+                        score = 0;
+                    }
+                    
+                    return Math.max(0, score);
+                },
+                'q6': (ans) => ans === 'NO' ? 25 : 0,
+                'q7': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = ['zmierzam', 'future tense'];
+                    let correctCount = 0;
+                    
+                    correct.forEach(c => {
+                        if (ans.includes(c)) correctCount++;
+                    });
+                    
+                    if (correctCount === 0) return 0;
+                    
+                    let score = correctCount === 2 ? 10 : 5;
+                    const wrongCount = ans.filter(a => !correct.includes(a) && a !== 'I don\'t know').length;
+                    score -= wrongCount * 2;
+                    
+                    return Math.max(0, score);
+                },
+                // Area 3
+                'q8': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'Perfect tenses are the "behind equivalent" of their counterparts';
+                    const acceptable = 'Future Perfect is an absurd tense';
+                    let score = 0;
+                    
+                    if (ans.includes(correct)) {
+                        score = 40;
+                        const wrongCount = ans.filter(a => a !== correct && a !== acceptable).length;
+                        score -= wrongCount * 10;
+                    } else if (ans.includes(acceptable)) {
+                        score = 20;
+                        const wrongCount = ans.filter(a => a !== acceptable).length;
+                        score -= wrongCount * 5;
+                    } else if (ans.includes('I don\'t know')) {
+                        score = 0;
+                    }
+                    
+                    return Math.max(0, score);
+                },
+                'q9': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'You shouldn\'t - sounds like you\'re returning from the future';
+                    let score = 0;
+                    
+                    if (ans.includes(correct)) {
+                        score = 20;
+                        const wrongCount = ans.length - 1;
+                        score -= wrongCount * 5;
+                    } else if (ans.includes('I don\'t know')) {
+                        score = 0;
+                    }
+                    
+                    return Math.max(0, score);
+                },
+                'q10': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'Nie ma jej';
+                    let score = 0;
+                    
+                    if (ans.includes(correct)) {
+                        score = 40;
+                        const wrongCount = ans.length - 1;
+                        score -= wrongCount * 10;
+                    }
+                    
+                    return Math.max(0, score);
+                },
+                // Area 4
+                'q11': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = ['Articles are pragmatic and solve a problem', 'Articles make English more efficient than Polish'];
+                    let correctCount = 0;
+                    
+                    correct.forEach(c => {
+                        if (ans.includes(c)) correctCount++;
+                    });
+                    
+                    if (correctCount === 0) return 0;
+                    
+                    // Base score based on correct answers
+                    let score = correctCount === 2 ? 25 : 12.5;
+                    
+                    // Deduct for wrong answers
+                    const wrongCount = ans.filter(a => !correct.includes(a) && a !== 'I don\'t know').length;
+                    score -= wrongCount * 5;
+                    
+                    return Math.max(0, score);
+                },
+                'q12': (ans) => {
+                    if (!ans) return 0;
+                    let score = 0;
+                    if (ans[0] === 'a') score += 8.33;
+                    if (ans[1] === 'a') score += 8.33;
+                    if (ans[2] === 'a') score += 8.34;
+                    return score;
+                },
+                'q13': (ans) => ans === 'NO' ? 25 : 0,
+                'q14': (ans) => ans === 'NO' ? 25 : 0,
+                // Area 5
+                'q15': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = ['Phrasals are logical and show you the meaning', 'There is something quite similar in Polish'];
+                    let correctCount = 0;
+                    
+                    correct.forEach(c => {
+                        if (ans.includes(c)) correctCount++;
+                    });
+                    
+                    if (correctCount === 0) return 0;
+                    
+                    let score = correctCount === 2 ? 40 : 20;
+                    const wrongCount = ans.filter(a => !correct.includes(a) && a !== 'I don\'t know').length;
+                    score -= wrongCount * 8;
+                    
+                    return Math.max(0, score);
+                },
+                'q16': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = ['End a relationship', 'Stop a fight', 'Bad phone connection'];
+                    let correctCount = 0;
+                    
+                    correct.forEach(c => {
+                        if (ans.includes(c)) correctCount++;
+                    });
+                    
+                    if (correctCount === 0) return 0;
+                    
+                    const baseScore = (correctCount / correct.length) * 20;
+                    const wrongCount = ans.filter(a => !correct.includes(a)).length;
+                    const finalScore = baseScore - (wrongCount * 4);
+                    
+                    return Math.max(0, finalScore);
+                },
+                'q17': (ans) => {
+                    if (!ans || ans.length === 0) return 0;
+                    
+                    const correct = 'It has about 8-10 meanings';
+                    let score = 0;
+                    
+                    if (ans.includes(correct)) {
+                        score = 40;
+                        const wrongCount = ans.length - 1;
+                        score -= wrongCount * 10;
+                    } else if (ans.includes('I don\'t know')) {
+                        score = 0;
+                    }
+                    
+                    return Math.max(0, score);
+                }
+            };
+            
+            // Calculate area scores
+            const areaScores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+            
+            Object.keys(answers).forEach(qId => {
+                if (scoring[qId]) {
+                    const score = scoring[qId](answers[qId]);
+                    const question = questions.find(q => q.id === qId);
+                    if (question) {
+                        areaScores[question.area] += score;
+                    }
+                }
+            });
+            
+            // Calculate overall score
+            const areaWeights = {
+                1: 0.15,
+                2: 0.25,
+                3: 0.20,
+                4: 0.25,
+                5: 0.15
+            };
+            
+            let overallScore = 0;
+            Object.keys(areaScores).forEach(area => {
+                overallScore += areaScores[area] * areaWeights[area];
+            });
+            
+            // Show results
+            showResults(overallScore, areaScores);
+            
+            // Store results globally for email
+            finalResults = {
+                overall: overallScore,
+                areas: areaScores
+            };
+        }
+        
+        function showResults(overall, areas) {
+            document.getElementById('testScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            // Animate overall score
+            const scoreCircle = document.querySelector('.score-circle');
+            const scoreDegrees = (overall / 100) * 360;
+            setTimeout(() => {
+                scoreCircle.style.setProperty('--score', `${scoreDegrees}deg`);
+                document.getElementById('finalScore').textContent = `${Math.round(overall)}%`;
+            }, 100);
+            
+            // Set message based on score
+            const distance = 100 - overall;
+            document.getElementById('scoreMessage').textContent = `You're ${Math.round(distance)}% away from native thinking`;
+            
+            // Animate area scores
+            setTimeout(() => {
+                Object.keys(areas).forEach(area => {
+                    const score = areas[area];
+                    document.getElementById(`area${area}Score`).style.width = `${score}%`;
+                    document.getElementById(`area${area}Percent`).textContent = `${Math.round(score)}%`;
+                });
+            }, 500);
+            
+            // Set custom message based on score range
+            let customMessage = '';
+            if (overall >= 90) {
+                customMessage = `
+                    <div style="margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <p style="font-size: 1.2em; line-height: 1.8;">
+                            <strong>The good news?</strong> Your English is exceptional.<br>
+                            <strong>The bad news?</strong> That invisible ${Math.round(distance)}% is why natives still know you're foreign.<br>
+                            <strong>The best news?</strong> We'll connect the dots already in your brain to eliminate those subtle tells forever.
+                        </p>
+                    </div>
+                `;
+            } else if (overall >= 70) {
+                customMessage = `
+                    <div style="margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <p style="font-size: 1.2em; line-height: 1.8;">
+                            <strong>The good news?</strong> Your English impresses people.<br>
+                            <strong>The bad news?</strong> Your brain still translates ${Math.round(distance)}% of the time, killing your natural flow.<br>
+                            <strong>The best news?</strong> Once you see English logic, those translation chains break themselves.
+                        </p>
+                    </div>
+                `;
+            } else if (overall >= 50) {
+                customMessage = `
+                    <div style="margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <p style="font-size: 1.2em; line-height: 1.8;">
+                            <strong>The good news?</strong> Your English gets the job done.<br>
+                            <strong>The bad news?</strong> Your Polish brain is working overtime, translating every thought.<br>
+                            <strong>The best news?</strong> We'll shut off that exhausting translation engine for good.
+                        </p>
+                    </div>
+                `;
+            } else if (overall >= 30) {
+                customMessage = `
+                    <div style="margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <p style="font-size: 1.2em; line-height: 1.8;">
+                            <strong>The good news?</strong> Your vocabulary is fine.<br>
+                            <strong>The bad news?</strong> You're drowning in fake rules that don't exist.<br>
+                            <strong>The best news?</strong> Real English is 10x simpler than the mess they taught you.
+                        </p>
+                    </div>
+                `;
+            } else {
+                customMessage = `
+                    <div style="margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <p style="font-size: 1.2em; line-height: 1.8;">
+                            <strong>The good news?</strong> You've studied English hard.<br>
+                            <strong>The bad news?</strong> Everything you learned is blocking real understanding.<br>
+                            <strong>The best news?</strong> When you finally see how English actually works, it's simpler than you ever imagined.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            // Add the offer
+            const offerHtml = `
+                <div style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(255,51,102,0.1), rgba(255,102,0,0.1)); border-radius: 15px; border: 1px solid rgba(255,51,102,0.3);">
+                    <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                        Your test shows several areas need work. Let's start with Articles - the #1 thing that exposes non-natives.
+                    </p>
+                    <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 15px;">
+                        You've memorized rules about 'a' vs 'the,' but articles aren't about rules. They're about what they do and what your listener knows.
+                    </p>
+                    <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 25px;">
+                        We'll show you the logic natives use unconsciously. Free. Because this one insight will prove everything else can be fixed too.
+                    </p>
+                    <a href="https://360yes.eu/articles-masterclass" class="btn" style="display: inline-block; text-decoration: none;">
+                        Get the Articles Secret Free →
+                    </a>
+                </div>
+            `;
+            
+            // Show detailed breakdown
+            const areaNames = {
+                1: 'General Understanding',
+                2: 'Simple vs Continuous', 
+                3: 'Perfect Tenses',
+                4: 'Articles',
+                5: 'Verbs & Phrasals'
+            };
+            
+            let breakdownHtml = '<h3>Your Area Scores:</h3>';
+            breakdownHtml += '<div style="margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">';
+            
+            Object.keys(areas).forEach(area => {
+                const rawScore = areas[area];
+                breakdownHtml += `
+                    <div style="margin: 15px 0; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong>${areaNames[area]}</strong>: <span style="color: #ff6600;">${Math.round(rawScore)}%</span>
+                    </div>
+                `;
+            });
+            
+            breakdownHtml += '</div>';
+            
+            // Add expandable detailed results
+            const detailedResultsHtml = `
+                <div style="margin: 40px 0; text-align: center;">
+                    <button class="btn" onclick="toggleDetailedResults()" style="background: rgba(255,255,255,0.1); border: 2px solid #ff6600;">
+                        Show My Detailed Feedback
+                    </button>
+                </div>
+                <div id="expandedResults" style="display: none; margin-top: 30px;">
+                    <!-- Detailed feedback will be inserted here -->
+                </div>
+            `;
+            
+            // Combine all HTML
+            document.getElementById('detailedResults').innerHTML = 
+                customMessage + offerHtml + breakdownHtml + detailedResultsHtml;
+            
+            // Prepare detailed feedback for expanding section
+            prepareDetailedFeedback();
+        }
+        
+        function toggleDetailedResults() {
+            const expanded = document.getElementById('expandedResults');
+            const button = event.target;
+            
+            if (expanded.style.display === 'none') {
+                expanded.style.display = 'block';
+                button.textContent = 'Hide Detailed Feedback';
+            } else {
+                expanded.style.display = 'none';
+                button.textContent = 'Show My Detailed Feedback';
+            }
+        }
+        
+        function prepareDetailedFeedback() {
+            const feedback = {
+                'q1': {
+                    correct: 'NO',
+                    explanation: 'Tests if you think ANY has two meanings. ANY always means "jakikolwiek" - Polish translation changes, English meaning doesn\'t.'
+                },
+                'q1a': {
+                    correct: ['Do you have something for me?', 'Do you have nothing for me?', 'Do you have anything for me?', 'Don\'t you have nothing for me?'],
+                    explanation: 'Tests if you\'re trapped by rules. ALL these options can be correct in English - if you only picked one, you\'re following fake rules about what\'s "allowed" in questions.'
+                },
+                'q2': {
+                    correct: 'NO',
+                    explanation: 'Polish brain alert! English can\'t skip words like Polish does. You need "explain IT to me" - no shortcuts allowed.'
+                },
+                'q4': {
+                    correct: 'NO',
+                    explanation: 'Tests if your brain processes -ing forms correctly. DOING shows ACTIVITY (robiący/a, robiąc, robienie) and is never a verb in English.'
+                },
+                'q4a': {
+                    correct: ['robiący/a, robiąc, robienie'],
+                    explanation: 'Tests if your brain processes -ing forms correctly. DOING shows ACTIVITY (robiący/a, robiąc, robienie) and is never a verb in English.'
+                },
+                'q5': {
+                    correct: ['It shows you\'re actively experiencing enjoyment at McDonald\'s'],
+                    explanation: 'Not a mistake, not "loving it now" - it shows actively enjoying the McDonald\'s experience. Continuous changes meaning, doesn\'t break rules.'
+                },
+                'q6': {
+                    correct: 'NO',
+                    explanation: 'Tests a dangerous myth. Past simple can mean "robiłem" OR "zrobiłem" - it shows facts or effects, not completion.'
+                },
+                'q7': {
+                    correct: ['zmierzam', 'future tense'],
+                    explanation: 'It literally means "zmierzam do" (heading toward) AND it functions as future tense. Not just one or the other - both are correct!'
+                },
+                'q8': {
+                    correct: ['Perfect tenses are the "behind equivalent" of their counterparts'],
+                    acceptable: ['Future Perfect is an absurd tense'],
+                    explanation: 'Perfect = behind your reference point. Why it matters: One simple concept explains ALL perfect tenses instead of memorizing 50 rules.'
+                },
+                'q9': {
+                    correct: ['You shouldn\'t - sounds like you\'re returning from the future'],
+                    explanation: 'Sounds weird? That\'s because it IS weird - like you\'re reporting back from the future. Why it matters: Even natives avoid this "Nostradamus tense" - don\'t waste time learning grammar nobody uses.'
+                },
+                'q10': {
+                    correct: ['Nie ma jej'],
+                    explanation: '"She\'s gone" = "Nie ma jej": Here the verb is \'is\' which shows her state as gone. But we don\'t know if she went herself, got kidnapped, or teleported - all we know, she\'s gone, not here.'
+                },
+                'q11': {
+                    correct: ['Articles are pragmatic and solve a problem', 'Articles make English more efficient than Polish'],
+                    explanation: 'Articles truth: They\'re tools for clarity, not grammar torture. Why it matters: Unless you understand "what they do" not "where to put them," you\'ll always make mistakes while second guessing yourself.'
+                },
+                'q12': {
+                    correct: ['a', 'a', 'a'],
+                    explanation: 'It\'s ALL "a" because you would like ANY fast, expensive car from the many that exist. Why it matters: You\'re following the fake rule "second mention = THE" instead of understanding what you\'re really showing.'
+                },
+                'q13': {
+                    correct: 'NO',
+                    explanation: 'Not an exception - these aren\'t proper names like "Poland" or "France." They\'re descriptions (states that are united, kingdom that is united) so they need articles like any noun. Why it matters: You\'re memorizing fake exceptions when it\'s just basic grammar - descriptive names need articles, proper names don\'t'
+                },
+                'q14': {
+                    correct: 'NO',
+                    explanation: 'Wrong! THE = "you know which one of many" Why it matters: This myth makes you use THE incorrectly, sounding like a textbook instead of a human.'
+                },
+                'q15': {
+                    correct: ['Phrasals are logical and show you the meaning', 'There is something quite similar in Polish'],
+                    explanation: 'Plot twist - phrasals ARE logical (verb + particle meanings) and Polish has them too (wy-nosić, za-nosić, przy-nosić). Why it matters: You\'ve been torturing yourself memorizing "unique" English weirdness when you already understand the concept from Polish!'
+                },
+                'q16': {
+                    correct: ['End a relationship', 'Stop a fight', 'Bad phone connection'],
+                    explanation: '"Break up" always shows separation/fragmentation - relationships end, fighters separate, signals fragment. Why it matters: One concept (creating separation) explains all uses. Stop memorizing random meanings when logic gives you the answer!'
+                },
+                'q17': {
+                    correct: ['It has about 8-10 meanings'],
+                    explanation: 'UP has 8-10 specific meanings - not just "higher." Think: give up, wake up, show up, fed up. Why it matters: You can\'t decode phrasals thinking UP = ⬆️. Learn particles\' real meanings and phrasals become logical, not magical.'
+                }
+            };
+            
+            // Build detailed feedback HTML
+            let feedbackHtml = '<h3>Your Detailed Feedback:</h3>';
+            let hasAnswers = false;
+            
+            Object.keys(feedback).forEach(qId => {
+                const userAnswer = answers[qId];
+                if (!userAnswer) return;
+                
+                hasAnswers = true;
+                const correctAnswer = feedback[qId].correct;
+                const acceptableAnswer = feedback[qId].acceptable;
+                
+                let isWrong = false;
+                let isIDontKnow = false;
+                
+                if (Array.isArray(userAnswer) && userAnswer.includes('I don\'t know')) {
+                    isIDontKnow = true;
+                } else if (Array.isArray(correctAnswer)) {
+                    if (!Array.isArray(userAnswer)) {
+                        isWrong = true;
+                    } else {
+                        isWrong = !(correctAnswer.length === userAnswer.length && 
+                                   correctAnswer.every(item => userAnswer.includes(item)));
+                    }
+                } else if (qId === 'q12') {
+                    isWrong = !(userAnswer && userAnswer[0] === 'a' && userAnswer[1] === 'a' && userAnswer[2] === 'a');
+                } else {
+                    isWrong = userAnswer !== correctAnswer;
+                    if (isWrong && acceptableAnswer && acceptableAnswer.includes(userAnswer)) {
+                        isWrong = false;
+                    }
+                }
+                
+                if ((isWrong || isIDontKnow) && feedback[qId].explanation) {
+                    const question = questions.find(q => q.id === qId);
+                    if (question) {
+                        feedbackHtml += `
+                            <div class="myth-item">
+                                <strong>Question: ${question.question}</strong><br>
+                                <span style="color: #ff3366;">Your answer: ${Array.isArray(userAnswer) ? userAnswer.join(', ') : userAnswer || 'No answer'}</span><br>
+                                <span style="color: #4CAF50;">Correct answer: ${Array.isArray(correctAnswer) ? correctAnswer.join(', ') : correctAnswer}</span><br>
+                                <em>${feedback[qId].explanation}</em>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            if (!hasAnswers) {
+                feedbackHtml = '<p>No feedback available.</p>';
+            }
+            
+            document.getElementById('expandedResults').innerHTML = feedbackHtml;
+        }
+    </script>
+</body>
+</html>
